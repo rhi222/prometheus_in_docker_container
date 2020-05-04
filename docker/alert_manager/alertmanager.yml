@@ -1,0 +1,20 @@
+---
+global:
+  # https://forcia.slack.com/services/BQPCLDJ11?added=1
+
+# https://prometheus.io/docs/alerting/configuration/#route
+route:
+  receiver: 'slack'
+  group_interval: 10s
+
+receivers:
+  - name: 'slack'
+    # https://prometheus.io/docs/alerting/configuration/#slack_config
+    slack_configs:
+      - channel: '#xx_devsemi_prom_test'
+        # Alertmanager templates apply here.
+        # yamllint disable-line rule:line-length
+        text: "<@your_slack_id> \nsummary: {{ .CommonAnnotations.summary }}\ndescription: {{ .CommonAnnotations.description }}"
+        # yamllint disable-line rule:line-length
+        api_url: 'https://hooks.slack.com/services/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'
+        send_resolved: true

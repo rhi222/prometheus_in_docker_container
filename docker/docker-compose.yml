@@ -1,0 +1,64 @@
+---
+version: '2'
+
+networks:
+  monitor-net:
+    driver: bridge
+
+services:
+
+  prometheus:
+    image: prometheus
+    build: prometheus
+    container_name: promethus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+    networks:
+      - monitor-net
+
+  # NOTE: Dockerでnode exporterを利用してDockerHostの情報を取得することは推奨されていない
+  # Dockerはマシンの内部動作からコンテナを切り離そうとするため
+  # 今回は環境構築が面倒なのでコンテナ内にnode exporterを押し込んでしまう
+  node_exporter:
+    image: node_exporter
+    build: node_exporter
+    container_name: node_exporter
+    ports:
+      - "9100:9100"
+    expose:
+      - "9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - monitor-net
+
+  grafana:
+    image: grafana
+    build: grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - monitor-net
+
+  alert_manager:
+    image: alert_manager
+    build: alert_manager
+    container_name: alert_manager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alert_manager:/etc/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+    networks:
+      - monitor-net
