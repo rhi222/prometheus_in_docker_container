@@ -1,6 +1,6 @@
 ---
 global:
-  # https://forcia.slack.com/services/BQPCLDJ11?added=1
+  # check your slack incoming webhook setting
 
 # https://prometheus.io/docs/alerting/configuration/#route
 route:
@@ -11,7 +11,7 @@ receivers:
   - name: 'slack'
     # https://prometheus.io/docs/alerting/configuration/#slack_config
     slack_configs:
-      - channel: '#xx_devsemi_prom_test'
+      - channel: '#your channel
         # Alertmanager templates apply here.
         # yamllint disable-line rule:line-length
         text: "<@your_slack_id> \nsummary: {{ .CommonAnnotations.summary }}\ndescription: {{ .CommonAnnotations.description }}"
